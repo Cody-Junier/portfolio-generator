@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const fs = require('fs')
+const {writeFile, copyFile}= require('.utils/generate-site.js');
 const generatePage= require('./src/page-template.js');
 
 const promptUser = ()=>{
@@ -128,69 +128,29 @@ const promptProject = portfolioData => {
     });
 };
 
-
-const mockData = {
-    name: 'Lernantino',
-    github: 'lernantino',
-    confirmAbout: true,
-    about:
-      'Duis consec.',
-    projects: [
-      {
-        name: 'Run Buddy',
-        description:
-          'Du',
-        languages: ['HTML', 'CSS'],
-        link: 'https://github.com/lernantino/run-buddy',
-        feature: true,
-        confirmAddProject: true
-      },
-      {
-        name: 'Taskinator',
-        description:
-          'Duis con',
-        languages: ['JavaScript', 'HTML', 'CSS'],
-        link: 'https://github.com/lernantino/taskinator',
-        feature: true,
-        confirmAddProject: true
-      },
-      {
-        name: 'Taskmaster Pro',
-        description:
-          'Duis ',
-        languages: ['JavaScript', 'jQuery', 'CSS', 'HTML', 'Bootstrap'],
-        link: 'https://github.com/lernantino/taskmaster-pro',
-        feature: false,
-        confirmAddProject: true
-      },
-      {
-        name: 'Robot Gladiators',
-        description:
-          'Duis consectetur',
-        languages: ['JavaScript'],
-        link: 'https://github.com/lernantino/robot-gladiators',
-        feature: false,
-        confirmAddProject: false
-      }
-    ]
-  };
-
-
-
-
 promptUser()
-  .then(promptProject)
-  .then(portfolioData => {
-    //   const pageHtml = generatePage(portfolioData);
-    const pageHtml = generatePage(mockData);
+    .then(promptProject)
+    .then(portfolioData => {
+      return generatePage(portfolioData);})
+    .then(pageHTML => {
+        return writeFile(pageHTML);})
+    .then(writeFileResponse =>{
+        console.log(writeFileResponse);
+        return copyFile();
+    })
+    .then(copyFileResponse => {
+        console.log(copyFileResponse);})
+    .catch(err =>{console.log(err);})
 
-      
-      fs.writeFile('./index.html', pageHtml, err => {
-          if (err) throw new Error (err);
-        
-          console.log('Portfolio complete! Check out index.html to see the output!');
-        });
-    console.log(portfolioData);
-  });
 
+    // We start by asking the user for their information with Inquirer prompts; this returns all of the data as an object in a Promise.
 
+    // The promptProject() function captures the returning data from promptUser() and we recursively call promptProject() for as many projects as the user wants to add. Each project will be pushed into a projects array in the collection of portfolio information, and when we're done, the final set of data is returned to the next .then().
+    
+    // The finished portfolio data object is returned as portfolioData and sent into the generatePage() function, which will return the finished HTML template code into pageHTML.
+    
+    // We pass pageHTML into the newly created writeFile() function, which returns a Promise. This is why we use return here, so the Promise is returned into the next .then() method.
+    
+    // Upon a successful file creation, we take the writeFileResponse object provided by the writeFile() function's resolve() execution to log it, and then we return copyFile().
+    
+    // The Promise returned by copyFile() then lets us know if the CSS file was copied correctly, and if so, we're all done!
