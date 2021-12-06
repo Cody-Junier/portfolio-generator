@@ -1,4 +1,7 @@
 const inquirer = require('inquirer');
+const fs = require('fs')
+const generatePage= require('./src/page-template.js');
+
 const promptUser = ()=>{
     return inquirer.prompt([
         {
@@ -73,7 +76,7 @@ const promptProject = portfolioData => {
         },
         {
             type:'input',
-            name:'desctiption',
+            name:'description',
             message:'Provide a description of the project (Required)',
             validate: nameInput => {
                 if (nameInput){
@@ -125,20 +128,69 @@ const promptProject = portfolioData => {
     });
 };
 
+
+const mockData = {
+    name: 'Lernantino',
+    github: 'lernantino',
+    confirmAbout: true,
+    about:
+      'Duis consec.',
+    projects: [
+      {
+        name: 'Run Buddy',
+        description:
+          'Du',
+        languages: ['HTML', 'CSS'],
+        link: 'https://github.com/lernantino/run-buddy',
+        feature: true,
+        confirmAddProject: true
+      },
+      {
+        name: 'Taskinator',
+        description:
+          'Duis con',
+        languages: ['JavaScript', 'HTML', 'CSS'],
+        link: 'https://github.com/lernantino/taskinator',
+        feature: true,
+        confirmAddProject: true
+      },
+      {
+        name: 'Taskmaster Pro',
+        description:
+          'Duis ',
+        languages: ['JavaScript', 'jQuery', 'CSS', 'HTML', 'Bootstrap'],
+        link: 'https://github.com/lernantino/taskmaster-pro',
+        feature: false,
+        confirmAddProject: true
+      },
+      {
+        name: 'Robot Gladiators',
+        description:
+          'Duis consectetur',
+        languages: ['JavaScript'],
+        link: 'https://github.com/lernantino/robot-gladiators',
+        feature: false,
+        confirmAddProject: false
+      }
+    ]
+  };
+
+
+
+
 promptUser()
   .then(promptProject)
   .then(portfolioData => {
+    //   const pageHtml = generatePage(portfolioData);
+    const pageHtml = generatePage(mockData);
+
+      
+      fs.writeFile('./index.html', pageHtml, err => {
+          if (err) throw new Error (err);
+        
+          console.log('Portfolio complete! Check out index.html to see the output!');
+        });
     console.log(portfolioData);
   });
-// const fs = require('fs')
-// const generatePage= require('./src/page-template.js');
 
-// const pageHtml = generatePage(name, github)
-
-
-// fs.writeFile('./index.html', pageHtml, err => {
-//     if (err) throw new Error (err);
-  
-//     console.log('Portfolio complete! Check out index.html to see the output!');
-//   });
 
